@@ -15,9 +15,22 @@ export function initChat() {
 
     // Auto-resize textarea
     messageInput.addEventListener('input', function() {
+        // Temporarily hide overflow to get accurate scrollHeight
+        this.style.overflow = 'hidden';
+
+        // Reset to auto to get natural height
         this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
-        
+
+        // Calculate new height with constraints
+        const minHeight = 80;
+        const maxHeight = 200;
+        const newHeight = Math.max(minHeight, Math.min(this.scrollHeight, maxHeight));
+
+        this.style.height = newHeight + 'px';
+
+        // Restore overflow if needed
+        this.style.overflow = newHeight >= maxHeight ? 'auto' : 'hidden';
+
         // Enable/disable send button
         sendButton.disabled = !this.value.trim();
     });
@@ -59,7 +72,7 @@ function sendMessage() {
     
     // Clear input and reset
     messageInput.value = '';
-    messageInput.style.height = 'auto';
+    messageInput.style.height = '80px';
     sendButton.disabled = true;
 
     // Store in history
