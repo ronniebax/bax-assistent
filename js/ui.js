@@ -53,4 +53,17 @@ export function updateUserDisplay() {
     if (userNameEl) userNameEl.textContent = currentUser.name;
     if (userEmailEl) userEmailEl.textContent = currentUser.email;
     if (userAvatarEl) userAvatarEl.src = currentUser.picture || '';
+
+    // Update welcome message with first name
+    updateWelcomeMessage();
+}
+
+export function updateWelcomeMessage() {
+    if (!currentUser) return;
+
+    const welcomeTitleEl = document.getElementById('welcome-title');
+    if (welcomeTitleEl) {
+        const firstName = currentUser.firstName || currentUser.name.split(' ')[0];
+        welcomeTitleEl.textContent = `Hoi ${firstName}, ik ben jouw persoonlijke Bax Music assistent`;
+    }
 }

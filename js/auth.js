@@ -146,6 +146,7 @@ export async function handleOAuthCallback(hash) {
             email: loginData.user.email,
             picture: loginData.user.picture,
             hd: loginData.user.domain,
+            firstName: loginData.user.user_first_name || loginData.user.name.split(' ')[0],
         };
         sessionState = {
             sessionId: loginData.sessionId,
@@ -225,6 +226,7 @@ async function checkSessionInUrl() {
                         email: user.email,
                         picture: user.picture,
                         hd: user.domain,
+                        firstName: user.user_first_name || user.name.split(' ')[0],
                     };
 
                     setCurrentUser(currentUser);
