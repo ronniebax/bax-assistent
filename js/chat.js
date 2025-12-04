@@ -106,8 +106,13 @@ function addMessageToUI(role, content, isTyping = false) {
     } else {
         avatarDiv.className = 'message-avatar';
         avatarDiv.innerHTML = `
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 133 133" role="img" aria-label="logo">
+                <g fill="currentColor" stroke="none">
+                    <rect x="1.00" y="81.00" width="27.00" height="36.00" rx="13.5" ry="13.5"/>
+                    <rect x="35.00" y="16.00" width="28.00" height="101.00" rx="14.0" ry="14.0"/>
+                    <rect x="70.00" y="52.00" width="28.00" height="65.00" rx="14.0" ry="14.0"/>
+                    <rect x="105.00" y="30.00" width="27.00" height="87.00" rx="13.5" ry="13.5"/>
+                </g>
             </svg>
         `;
     }
@@ -308,8 +313,13 @@ function createStreamingMessage() {
     const avatarDiv = document.createElement('div');
     avatarDiv.className = 'message-avatar';
     avatarDiv.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+        <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 133 133" role="img" aria-label="logo">
+            <g fill="currentColor" stroke="none">
+                <rect x="1.00" y="81.00" width="27.00" height="36.00" rx="13.5" ry="13.5"/>
+                <rect x="35.00" y="16.00" width="28.00" height="101.00" rx="14.0" ry="14.0"/>
+                <rect x="70.00" y="52.00" width="28.00" height="65.00" rx="14.0" ry="14.0"/>
+                <rect x="105.00" y="30.00" width="27.00" height="87.00" rx="13.5" ry="13.5"/>
+            </g>
         </svg>
     `;
 
