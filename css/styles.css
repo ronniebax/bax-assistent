@@ -292,7 +292,7 @@ body:not(.initialized) #app-view {
     flex: 1;
     display: flex;
     flex-direction: column;
-    max-width: 80rem;
+    max-width: 60rem;
     width: 100%;
     margin: 0 auto;
     height: calc(100vh - 80px);
@@ -431,6 +431,91 @@ body:not(.initialized) #app-view {
 
 .message.user-message .message-time {
     text-align: right;
+}
+
+/* Markdown Content in Message Bubbles */
+.message-bubble p {
+    margin: 0;
+    margin-bottom: 0.75rem;
+}
+
+.message-bubble p:last-child {
+    margin-bottom: 0;
+}
+
+.message-bubble a {
+    color: var(--secondary-1);
+    text-decoration: underline;
+    word-break: break-all;
+}
+
+.message-bubble a:hover {
+    color: var(--primary);
+}
+
+.message-bubble strong {
+    font-weight: 700;
+}
+
+.message-bubble em {
+    font-style: italic;
+}
+
+.message-bubble code {
+    background: var(--bg-light);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.875em;
+}
+
+.message-bubble pre {
+    background: var(--bg-light);
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+}
+
+.message-bubble pre code {
+    background: none;
+    padding: 0;
+}
+
+.message-bubble ul,
+.message-bubble ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.message-bubble li {
+    margin: 0.25rem 0;
+}
+
+.message-bubble blockquote {
+    border-left: 3px solid var(--primary);
+    padding-left: 0.75rem;
+    margin: 0.5rem 0;
+    color: var(--text-gray);
+}
+
+.message-bubble h1,
+.message-bubble h2,
+.message-bubble h3,
+.message-bubble h4,
+.message-bubble h5,
+.message-bubble h6 {
+    margin: 0.75rem 0 0.5rem 0;
+    font-weight: 700;
+}
+
+.message-bubble h1:first-child,
+.message-bubble h2:first-child,
+.message-bubble h3:first-child,
+.message-bubble h4:first-child,
+.message-bubble h5:first-child,
+.message-bubble h6:first-child {
+    margin-top: 0;
 }
 
 /* Typing Indicator */

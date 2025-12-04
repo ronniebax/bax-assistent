@@ -10,6 +10,31 @@ function generateMessageId() {
     return `msg-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 }
 
+// Configure marked for safe rendering
+if (window.marked) {
+    marked.setOptions({
+        breaks: true, // Convert \n to <br>
+        gfm: true, // GitHub Flavored Markdown
+        sanitize: false, // We trust our backend
+        headerIds: false,
+        mangle: false
+    });
+}
+
+// Render markdown to HTML
+function renderMarkdown(text) {
+    if (!window.marked) {
+        // Fallback if marked is not loaded
+        return text;
+    }
+    try {
+        return marked.parse(text);
+    } catch (error) {
+        console.error('Markdown parsing error:', error);
+        return text;
+    }
+}
+
 export function initChat() {
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
@@ -145,7 +170,12 @@ function addMessageToUI(role, content, isTyping = false, messageId = null) {
         `;
         bubbleDiv.id = 'typing-indicator';
     } else {
-        bubbleDiv.textContent = content;
+        // Render markdown for assistant messages, plain text for user messages
+        if (role === 'assistant') {
+            bubbleDiv.innerHTML = renderMarkdown(content);
+        } else {
+            bubbleDiv.textContent = content;
+        }
 
         // Add timestamp and feedback buttons
         const timeDiv = document.createElement('div');
@@ -369,7 +399,8 @@ function createStreamingMessage(messageId) {
 function updateStreamingMessage(messageElement, content) {
     const bubbleDiv = messageElement.querySelector('.message-bubble');
     if (bubbleDiv) {
-        bubbleDiv.textContent = content;
+        // Render markdown during streaming
+        bubbleDiv.innerHTML = renderMarkdown(content);
 
         // Scroll to bottom
         const messagesArea = document.getElementById('messages-area');
