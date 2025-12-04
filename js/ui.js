@@ -64,6 +64,6 @@ export function updateWelcomeMessage() {
     const welcomeTitleEl = document.getElementById('welcome-title');
     if (welcomeTitleEl) {
         const firstName = currentUser.firstName || currentUser.name.split(' ')[0];
-        welcomeTitleEl.textContent = `Hoi ${firstName}! Waar kan ik je van vandaag helpen?`;
+        welcomeTitleEl.textContent = `Hoi ${firstName}! Waar kan ik je van vandaag mee helpen?`;
     }
 }
