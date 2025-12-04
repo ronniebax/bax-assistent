@@ -510,14 +510,12 @@ async function handleFeedback(messageId, vote) {
         // Remove loading state
         selectedButton.classList.remove('loading');
 
-        // Show success toast
-        showToast(vote === 'up' ? 'Bedankt voor je feedback!' : 'Bedankt voor je feedback!');
-
         // If thumbs down, show comment modal
         if (vote === 'down') {
-            setTimeout(() => {
-                showFeedbackModal(feedbackData.feedback_id);
-            }, 500);
+            showFeedbackModal(feedbackData.feedback_id);
+        } else {
+            // Only show toast for thumbs up
+            showToast('Bedankt voor je feedback!');
         }
 
     } catch (error) {
