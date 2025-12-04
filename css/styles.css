@@ -22,6 +22,7 @@
     --primary: #C30061;
     --secondary-1: #0087AF;
     --secondary-2: #691C7F;
+    --secondary-3: #00ab97;
     --text-dark: #1a1a1a;
     --text-gray: #6b7280;
     --bg-light: #f8f9fa;
@@ -385,8 +386,9 @@ body:not(.initialized) #app-view {
 }
 
 .message-content {
-    flex: 1;
     max-width: 70%;
+    display: flex;
+    flex-direction: column;
 }
 
 .message-bubble {
@@ -395,10 +397,11 @@ body:not(.initialized) #app-view {
     font-size: 0.95rem;
     line-height: 1.6;
     word-wrap: break-word;
+    width: fit-content;
 }
 
 .message.user-message .message-bubble {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary-2) 100%);
+    background: linear-gradient(135deg, var(--secondary-1) 0%, var(--secondary-3) 100%);
     color: var(--white);
     border-bottom-right-radius: 0.25rem;
 }
