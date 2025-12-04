@@ -363,6 +363,11 @@ body:not(.initialized) #app-view {
     max-width: 100%;
 }
 
+/* Center avatar only for typing indicator */
+.message:has(.typing-indicator) {
+    align-items: center;
+}
+
 .message.user-message {
     flex-direction: row-reverse;
 }
