@@ -16,6 +16,25 @@ let sessionState = {
 // Max verification attempts before giving up
 const MAX_VERIFICATION_ATTEMPTS = 3;
 
+// Helper function to show login with error
+function showLoginWithError(errorMessage) {
+    // Remove inline styles that might hide login view (added in index.html to prevent flashing)
+    const inlineStyles = document.querySelectorAll('style');
+    inlineStyles.forEach(style => {
+        if (style.textContent.includes('#login-view { display: none !important')) {
+            style.remove();
+        }
+    });
+
+    showView('login');
+    // Use setTimeout to ensure DOM is updated before showing error
+    setTimeout(() => {
+        showError(errorMessage);
+        // Auto-hide error after 3 seconds
+        setTimeout(() => hideError(), 3000);
+    }, 0);
+}
+
 function getSessionFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('session');
@@ -126,14 +145,22 @@ export async function handleOAuthCallback(hash) {
             }
         });
 
-        if (!loginResponse.ok) {
-            throw new Error('Login verificatie mislukt');
+        // Always try to parse response body for error details
+        let loginData;
+        try {
+            loginData = await loginResponse.json();
+        } catch (parseError) {
+            // If response is not JSON, use generic error
+            if (!loginResponse.ok) {
+                throw new Error(`Login verificatie mislukt (${loginResponse.status})`);
+            }
+            throw new Error('Invalid response from server');
         }
 
-        const loginData = await loginResponse.json();
-
-        if (!loginData.success) {
-            throw new Error(loginData.error || 'Login mislukt');
+        // Check for errors (both HTTP status and success flag)
+        if (!loginResponse.ok || !loginData.success) {
+            const errorMessage = loginData.error || `Login verificatie mislukt (${loginResponse.status})`;
+            throw new Error(errorMessage);
         }
 
         if (!loginData.user) {
@@ -163,8 +190,7 @@ export async function handleOAuthCallback(hash) {
     } catch (err) {
         console.error('Login error:', err.message);
         isAuthenticating = false;
-        showError(err.message);
-        showView('login');
+        showLoginWithError(err.message);
     }
 }
 
@@ -231,7 +257,7 @@ async function checkSessionInUrl() {
 
                     setCurrentUser(currentUser);
                     setAuthToken(sessionId);
-                    
+
                     // Store in memory for future page loads
                     sessionState = {
                         sessionId,
@@ -239,7 +265,7 @@ async function checkSessionInUrl() {
                         lastVerified: Date.now(),
                         verificationAttempts: 0
                     };
-                    
+
                     // Ensure session stays in URL
                     ensureSessionInUrl(sessionId);
 
@@ -247,8 +273,10 @@ async function checkSessionInUrl() {
                 } else {
                     // Server explicitly says session is invalid - clear and show login
                     console.warn('Session invalid/expired');
+                    const errorMsg = verifyData.error || 'Sessie is verlopen. Log opnieuw in.';
                     const baseUrl = window.location.origin + window.location.pathname;
                     window.history.replaceState({}, '', baseUrl);
+                    showLoginWithError(errorMsg);
                     return false;
                 }
             }
@@ -264,8 +292,21 @@ async function checkSessionInUrl() {
             // Client error (4xx) - session invalid ONLY if 401/403
             if (verifyResponse.status === 401 || verifyResponse.status === 403) {
                 console.warn('Session rejected by server (401/403)');
+
+                // Try to parse error message from response
+                let errorMsg = 'Je bent niet geautoriseerd. Log opnieuw in.';
+                try {
+                    const errorData = await verifyResponse.json();
+                    if (errorData.error) {
+                        errorMsg = errorData.error;
+                    }
+                } catch (e) {
+                    // If parsing fails, use default message
+                }
+
                 const baseUrl = window.location.origin + window.location.pathname;
                 window.history.replaceState({}, '', baseUrl);
+                showLoginWithError(errorMsg);
                 return false;
             }
 
@@ -323,9 +364,9 @@ async function checkSessionInUrl() {
     }
     
     // Give up - too many failures
-    showError('Kan sessie niet verifiëren. Log opnieuw in.');
     const baseUrl = window.location.origin + window.location.pathname;
     window.history.replaceState({}, '', baseUrl);
+    showLoginWithError('Kan sessie niet verifiëren. Log opnieuw in.');
 
     return false;
 }
@@ -349,7 +390,6 @@ export function setupOAuthCallback() {
         const params = new URLSearchParams(hash.substring(1));
         const error = params.get('error');
         const errorDescription = params.get('error_description') || error;
-        showError(`Google login error: ${errorDescription}`);
-        showView('login');
+        showLoginWithError(`Google login error: ${errorDescription}`);
     }
 }
