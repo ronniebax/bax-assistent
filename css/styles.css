@@ -252,7 +252,7 @@ body:not(.initialized) #app-view {
 }
 
 .header-logo {
-    width: 45px;
+    width: 60px;
     height: auto;
 }
 
@@ -705,7 +705,7 @@ body:not(.initialized) #app-view {
 
 .chat-container[data-input-position="welcome"] .welcome-message {
     margin: 0 auto 0.25rem;
-    padding: 1.75rem 1.25rem;
+    padding: 0.5rem 1.25rem;
 }
 
 .chat-container[data-input-position="welcome"] .input-area {
