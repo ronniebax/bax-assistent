@@ -665,6 +665,7 @@ function showFeedbackModal(feedbackId) {
 
     // Clear textarea
     textarea.value = '';
+    submitBtn.disabled = true;
 
     // Show modal
     modal.classList.add('show');
@@ -708,11 +709,17 @@ function showFeedbackModal(feedbackId) {
         submitBtn.removeEventListener('click', handleSubmit);
         skipBtn.removeEventListener('click', closeModal);
         closeBtn.removeEventListener('click', closeModal);
+        textarea.removeEventListener('input', handleInput);
+    };
+
+    const handleInput = () => {
+        submitBtn.disabled = textarea.value.trim().length === 0;
     };
 
     submitBtn.addEventListener('click', handleSubmit);
     skipBtn.addEventListener('click', closeModal);
     closeBtn.addEventListener('click', closeModal);
+    textarea.addEventListener('input', handleInput);
 
     // Close on backdrop click
     modal.addEventListener('click', (e) => {

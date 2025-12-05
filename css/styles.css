@@ -1005,13 +1005,23 @@ body:not(.initialized) #app-view {
 }
 
 .feedback-modal-btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary-2) 100%);
+    background: var(--primary);
+    border: 2px solid var(--primary);
     color: var(--white);
 }
 
 .feedback-modal-btn-primary:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(195, 0, 97, 0.3);
+    background: #d31772;
+    border-color: #d31772;
+    box-shadow: 0 0 0 2px rgba(211, 23, 114, 0.14);
+}
+
+.feedback-modal-btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+    background: #9b004b;
+    border-color: #9b004b;
+    box-shadow: 0 0 0 2px rgba(155, 0, 75, 0.12);
 }
 
 .feedback-modal-btn-primary:disabled {
