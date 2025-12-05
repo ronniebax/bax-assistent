@@ -254,7 +254,10 @@ function addMessageToUI(role, content, isTyping = false, messageId = null) {
     messagesArea.appendChild(messageDiv);
 
     // Scroll to bottom
-    messagesArea.scrollTop = messagesArea.scrollHeight;
+    const appView = document.getElementById('app-view');
+    if (appView) {
+        appView.scrollTop = appView.scrollHeight;
+    }
 }
 
 function showTypingIndicator() {
@@ -445,7 +448,10 @@ function createStreamingMessage(messageId) {
     messagesArea.appendChild(messageDiv);
 
     // Scroll to bottom
-    messagesArea.scrollTop = messagesArea.scrollHeight;
+    const appView = document.getElementById('app-view');
+    if (appView) {
+        appView.scrollTop = appView.scrollHeight;
+    }
 
     return messageDiv;
 }
@@ -457,8 +463,10 @@ function updateStreamingMessage(messageElement, content) {
         bubbleDiv.innerHTML = renderMarkdown(content);
 
         // Scroll to bottom
-        const messagesArea = document.getElementById('messages-area');
-        messagesArea.scrollTop = messagesArea.scrollHeight;
+        const appView = document.getElementById('app-view');
+        if (appView) {
+            appView.scrollTop = appView.scrollHeight;
+        }
     }
 }
 
