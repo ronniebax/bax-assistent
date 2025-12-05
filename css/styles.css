@@ -648,34 +648,41 @@ body:not(.initialized) #app-view {
 .send-button {
     position: absolute;
     right: 0.5rem;
-    bottom: 0.5rem;
-    width: 2.5rem;
-    height: 2.5rem;
+    bottom: 0.75rem;
+    width: 2.25rem;
+    height: 2.25rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary-2) 100%);
+    background: var(--primary);
     color: var(--white);
-    border: none;
+    border: 2px solid var(--primary);
     border-radius: 0.5rem;
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
+    box-shadow: 0 0 0 2px rgba(195, 0, 97, 0.08);
 }
 
 .send-button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(195, 0, 97, 0.3);
+    transform: translateY(-1px);
+    background: #d31772;
+    border-color: #d31772;
+    box-shadow: 0 0 0 2px rgba(211, 23, 114, 0.14);
 }
 
 .send-button:active:not(:disabled) {
     transform: translateY(0);
+    background: #9b004b;
+    border-color: #9b004b;
+    box-shadow: 0 0 0 2px rgba(155, 0, 75, 0.12);
 }
 
 .send-button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
     background: var(--text-gray);
+    border-color: var(--text-gray);
 }
 
 .input-hint {
@@ -789,12 +796,12 @@ body:not(.initialized) #app-view {
     }
 
     .send-button {
-        width: 2.25rem;
-        height: 2.25rem;
+        width: 2.1rem;
+        height: 2.1rem;
     }
 
     .message-input {
-        padding-right: 3.25rem;
+        padding-right: 3rem;
     }
 }
 
