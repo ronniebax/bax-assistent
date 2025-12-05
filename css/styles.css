@@ -538,9 +538,10 @@ body:not(.initialized) #app-view {
 
 /* Typing Indicator */
 .message-bubble:has(.typing-indicator) {
-    padding: 1.25rem 1.75rem;
-    width: fit-content;
-    border-radius: 1rem !important;
+    padding: 0;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .typing-indicator {
@@ -580,9 +581,9 @@ body:not(.initialized) #app-view {
 }
 
 /* Streaming Message Indicator */
-.message.assistant-message[data-streaming="true"]:not(:has(.typing-indicator)) .message-bubble::after {
+.message.assistant-message[data-streaming="true"]:not(:has(.typing-indicator)) .message-bubble *:last-child::after {
     content: '|';
-    display: inline-block;
+    display: inline;
     animation: cursor-blink 0.8s ease infinite;
     margin-left: 1px;
     color: var(--primary);
