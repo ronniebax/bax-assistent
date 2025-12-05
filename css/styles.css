@@ -305,6 +305,9 @@ body:not(.initialized) #app-view {
     padding: 2rem 1.5rem;
     display: flex;
     flex-direction: column;
+    max-width: 46rem;
+    width: 100%;
+    margin: 0 auto;
 }
 
 .messages-area::-webkit-scrollbar {
@@ -328,7 +331,8 @@ body:not(.initialized) #app-view {
 .welcome-message {
     text-align: center;
     padding: 4rem 2rem;
-    margin: auto;
+    margin: 0 auto;
+    align-self: center;
 }
 
 .welcome-icon {
@@ -368,8 +372,13 @@ body:not(.initialized) #app-view {
     align-items: center;
 }
 
+.message.assistant-message {
+    align-self: flex-start;
+}
+
 .message.user-message {
     flex-direction: row-reverse;
+    align-self: flex-end;
 }
 
 .message-avatar {
@@ -392,7 +401,7 @@ body:not(.initialized) #app-view {
 }
 
 .message-content {
-    max-width: 70%;
+    max-width: 85%;
     display: flex;
     flex-direction: column;
 }
@@ -583,13 +592,15 @@ body:not(.initialized) #app-view {
 /* Input Area */
 .input-area {
     flex-shrink: 0;
-    padding: 1.5rem;
-    background: var(--white);
-    border-top: 1px solid var(--border);
+    padding: 0;
+    background: transparent;
+    border-top: none;
+    box-shadow: none;
+    transition: margin 0.35s ease, padding 0.35s ease, background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
 .input-container {
-    max-width: 60rem;
+    max-width: 48rem;
     margin: 0 auto;
     position: relative;
 }
@@ -606,8 +617,10 @@ body:not(.initialized) #app-view {
     resize: none;
     max-height: 200px;
     overflow-y: hidden;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     line-height: 1.5;
+    background: var(--white);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
 }
 
 .message-input:focus {
@@ -653,14 +666,52 @@ body:not(.initialized) #app-view {
 }
 
 .input-hint {
-    max-width: 60rem;
+    max-width: 48rem;
     margin: 0.5rem auto 0;
     text-align: center;
+    background: transparent;
 }
 
 .hint-text {
     font-size: 0.75rem;
     color: var(--text-gray);
+}
+
+/* Input positioning states */
+.chat-container[data-input-position="welcome"] {
+    justify-content: center;
+    gap: 0.5rem;
+    transform: translateY(-6vh);
+}
+
+.chat-container[data-input-position="welcome"] .messages-area {
+    flex: 0;
+    overflow: visible;
+    padding: 1.25rem 1.5rem 0.25rem;
+}
+
+.chat-container[data-input-position="welcome"] .welcome-message {
+    margin: 0 auto 0.25rem;
+    padding: 1.75rem 1.25rem;
+}
+
+.chat-container[data-input-position="welcome"] .input-area {
+    border-top: none;
+    background: transparent;
+    box-shadow: none;
+    margin-top: 0.25rem;
+}
+
+
+.chat-container[data-input-position="docked"] .messages-area {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.chat-container[data-input-position="docked"] .input-area {
+    box-shadow: none;
+    background: transparent;
+    border-top: none;
 }
 
 /* Responsive */
@@ -690,10 +741,6 @@ body:not(.initialized) #app-view {
 
     .message-content {
         max-width: 85%;
-    }
-
-    .input-area {
-        padding: 1rem;
     }
 
     .header-logo {

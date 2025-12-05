@@ -5,6 +5,7 @@ import { getAuthToken, sendFeedback } from '/webhook/bax-assistent/js/api.js';
 
 let messageHistory = [];
 let sessionId = null;
+let hasDockedInput = false;
 
 function generateMessageId() {
     return `msg-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
@@ -48,6 +49,9 @@ function renderMarkdown(text) {
 export function initChat() {
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
+    const messagesArea = document.getElementById('messages-area');
+
+    setInitialInputPosition(messagesArea);
     
     // Generate or retrieve session ID
     sessionId = getAuthToken() || generateSessionId();
@@ -92,6 +96,45 @@ function generateSessionId() {
     return 'session_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11);
 }
 
+function setInitialInputPosition(messagesArea) {
+    const chatContainer = document.querySelector('.chat-container');
+    if (!chatContainer) return;
+
+    const hasMessages = messagesArea?.querySelector('.message');
+    const initialState = hasMessages ? 'docked' : 'welcome';
+    chatContainer.dataset.inputPosition = initialState;
+    hasDockedInput = initialState === 'docked';
+}
+
+function dockInputArea() {
+    if (hasDockedInput) return;
+    const chatContainer = document.querySelector('.chat-container');
+    const inputArea = document.querySelector('.input-area');
+    if (!chatContainer || !inputArea) return;
+
+    const startRect = inputArea.getBoundingClientRect();
+
+    chatContainer.dataset.inputPosition = 'docked';
+    hasDockedInput = true;
+
+    const endRect = inputArea.getBoundingClientRect();
+    const deltaX = startRect.left - endRect.left;
+    const deltaY = startRect.top - endRect.top;
+
+    if (inputArea.animate) {
+        inputArea.animate(
+            [
+                { transform: `translate(${deltaX}px, ${deltaY}px)` },
+                { transform: 'translate(0, 0)' }
+            ],
+            {
+                duration: 400,
+                easing: 'ease'
+            }
+        );
+    }
+}
+
 function sendMessage() {
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
@@ -105,6 +148,7 @@ function sendMessage() {
     if (welcomeMessage) {
         welcomeMessage.remove();
     }
+    dockInputArea();
 
     // Add user message to UI
     addMessageToUI('user', messageText);
