@@ -12,12 +12,22 @@ function generateMessageId() {
 
 // Configure marked for safe rendering
 if (window.marked) {
+    // Custom renderer to add target="_blank" to all links
+    const renderer = new marked.Renderer();
+    const originalLinkRenderer = renderer.link.bind(renderer);
+
+    renderer.link = function(href, title, text) {
+        const html = originalLinkRenderer(href, title, text);
+        return html.replace(/^<a /, '<a target="_blank" rel="noopener noreferrer" ');
+    };
+
     marked.setOptions({
         breaks: true, // Convert \n to <br>
         gfm: true, // GitHub Flavored Markdown
         sanitize: false, // We trust our backend
         headerIds: false,
-        mangle: false
+        mangle: false,
+        renderer: renderer
     });
 }
 
