@@ -230,7 +230,7 @@ body:not(.initialized) #app-view {
     top: 0;
     background: var(--white);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    padding: 1rem 1.5rem;
+    padding: 0.25rem 1.5rem;
     border-bottom: 3px solid var(--primary);
     flex-shrink: 0;
     z-index: 20;
