@@ -6,6 +6,7 @@ import { getAuthToken, sendFeedback } from '/webhook/bax-assistent/js/api.js';
 let messageHistory = [];
 let sessionId = null;
 let hasDockedInput = false;
+let isAssistantResponding = false;
 
 function generateMessageId() {
     return `msg-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
@@ -74,15 +75,15 @@ export function initChat() {
         // Restore overflow if needed
         this.style.overflow = newHeight >= maxHeight ? 'auto' : 'hidden';
 
-        // Enable/disable send button
-        sendButton.disabled = !this.value.trim();
+        // Enable/disable send button - disabled if empty OR if assistant is responding
+        sendButton.disabled = !this.value.trim() || isAssistantResponding;
     });
 
     // Handle Enter key (without Shift)
     messageInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            if (this.value.trim()) {
+            if (this.value.trim() && !isAssistantResponding) {
                 sendMessage();
             }
         }
@@ -94,6 +95,17 @@ export function initChat() {
 
 function generateSessionId() {
     return 'session_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11);
+}
+
+function updateInputState() {
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+
+    if (!messageInput || !sendButton) return;
+
+    // Disable input and button when assistant is responding
+    messageInput.disabled = isAssistantResponding;
+    sendButton.disabled = isAssistantResponding || !messageInput.value.trim();
 }
 
 function setInitialInputPosition(messagesArea) {
@@ -139,9 +151,9 @@ function sendMessage() {
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
     const messagesArea = document.getElementById('messages-area');
-    
+
     const messageText = messageInput.value.trim();
-    if (!messageText) return;
+    if (!messageText || isAssistantResponding) return;
 
     // Clear welcome message on first message
     const welcomeMessage = messagesArea.querySelector('.welcome-message');
@@ -166,6 +178,10 @@ function sendMessage() {
         content: messageText,
         timestamp: new Date().toISOString()
     });
+
+    // Set assistant responding state
+    isAssistantResponding = true;
+    updateInputState();
 
     // Show typing indicator
     showTypingIndicator();
@@ -401,12 +417,20 @@ async function sendToN8nChat(message) {
             });
         }
 
+        // Re-enable input after successful completion
+        isAssistantResponding = false;
+        updateInputState();
+
     } catch (error) {
         console.error('Chat error:', error);
         hideTypingIndicator();
 
         // Show error message
         addMessageToUI('assistant', 'Sorry, er is een fout opgetreden. Probeer het opnieuw.');
+
+        // Re-enable input on error
+        isAssistantResponding = false;
+        updateInputState();
     }
 }
 
@@ -488,6 +512,10 @@ function finalizeStreamingMessage(messageElement, messageId) {
 
         contentDiv.appendChild(timeDiv);
     }
+
+    // Re-enable input - assistant is done responding
+    isAssistantResponding = false;
+    updateInputState();
 }
 
 function formatTime(date) {
