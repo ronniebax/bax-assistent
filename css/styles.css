@@ -696,11 +696,34 @@ body:not(.initialized) #app-view {
     margin: 0.5rem auto 0;
     text-align: center;
     background: transparent;
+    position: relative;
+    padding: 0 0.5rem;
 }
 
 .hint-text {
     font-size: 0.75rem;
     color: var(--text-gray);
+}
+
+.character-counter {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    color: var(--text-gray);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    font-variant-numeric: tabular-nums;
+}
+
+.character-counter.visible {
+    opacity: 1;
+}
+
+.character-counter.warning {
+    color: #ff6b6b;
+    font-weight: 500;
 }
 
 /* Input positioning states */

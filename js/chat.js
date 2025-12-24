@@ -7,6 +7,7 @@ let messageHistory = [];
 let sessionId = null;
 let hasDockedInput = false;
 let isAssistantResponding = false;
+const MAX_MESSAGE_LENGTH = 3000; // Maximum aantal karakters per bericht
 
 function generateMessageId() {
     return `msg-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
@@ -59,6 +60,17 @@ export function initChat() {
 
     // Auto-resize textarea
     messageInput.addEventListener('input', function() {
+        const currentLength = this.value.length;
+
+        // Check character limit
+        if (currentLength > MAX_MESSAGE_LENGTH) {
+            this.value = this.value.substring(0, MAX_MESSAGE_LENGTH);
+            showCharacterLimitWarning();
+        }
+
+        // Update character counter
+        updateCharacterCounter(this.value.length);
+
         // Temporarily hide overflow to get accurate scrollHeight
         this.style.overflow = 'hidden';
 
@@ -106,6 +118,45 @@ function updateInputState() {
     // Disable input and button when assistant is responding
     messageInput.disabled = isAssistantResponding;
     sendButton.disabled = isAssistantResponding || !messageInput.value.trim();
+}
+
+function updateCharacterCounter(count) {
+    let counter = document.getElementById('character-counter');
+
+    if (!counter) {
+        // Create counter if it doesn't exist
+        const inputHint = document.querySelector('.input-hint');
+        if (inputHint) {
+            counter = document.createElement('span');
+            counter.id = 'character-counter';
+            counter.className = 'character-counter';
+            inputHint.appendChild(counter);
+        }
+    }
+
+    if (counter) {
+        const remaining = MAX_MESSAGE_LENGTH - count;
+        counter.textContent = `${count} / ${MAX_MESSAGE_LENGTH}`;
+
+        // Visual warning when approaching limit
+        if (remaining < 100) {
+            counter.classList.add('warning');
+        } else {
+            counter.classList.remove('warning');
+        }
+
+        // Show counter only when typing or near limit
+        if (count > 0) {
+            counter.classList.add('visible');
+        } else {
+            counter.classList.remove('visible');
+        }
+    }
+}
+
+function showCharacterLimitWarning() {
+    // Use existing toast system
+    showToast('Maximale berichtlengte bereikt', 'error');
 }
 
 function setInitialInputPosition(messagesArea) {
@@ -164,11 +215,12 @@ function sendMessage() {
 
     // Add user message to UI
     addMessageToUI('user', messageText);
-    
+
     // Clear input and reset
     messageInput.value = '';
     messageInput.style.height = '80px';
     sendButton.disabled = true;
+    updateCharacterCounter(0);
 
     // Store in history
     const userMessageId = generateMessageId();
