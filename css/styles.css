@@ -427,7 +427,7 @@ body:not(.initialized) #app-view {
     background: linear-gradient(135deg, var(--secondary-1) 0%, var(--secondary-3) 100%);
     color: var(--white);
     border-bottom-right-radius: 0.25rem;
-}
+    }
 
 .message.assistant-message .message-bubble {
     background: var(--white);
