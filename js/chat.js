@@ -1,7 +1,7 @@
 // chat.js - Custom UI with n8n Chat Trigger Backend
 import { CONFIG } from '/webhook/bax-assistent/js/config.js';
 import { getCurrentUser } from '/webhook/bax-assistent/js/ui.js';
-import { getAuthToken, sendFeedback } from '/webhook/bax-assistent/js/api.js';
+import { sendFeedback } from '/webhook/bax-assistent/js/api.js';
 
 let messageHistory = [];
 let sessionId = null;
@@ -54,9 +54,9 @@ export function initChat() {
     const messagesArea = document.getElementById('messages-area');
 
     setInitialInputPosition(messagesArea);
-    
-    // Generate or retrieve session ID
-    sessionId = getAuthToken() || generateSessionId();
+
+    // Generate new session ID for each page load (fresh chat session)
+    sessionId = generateSessionId();
 
     // Auto-resize textarea
     messageInput.addEventListener('input', function() {
@@ -351,11 +351,19 @@ async function sendToN8nChat(message) {
     console.log('Sending to webhook:', webhookUrl); // Debug log
 
     try {
+        // Get user first name for personalization
+        const firstName = user?.firstName || user?.name?.split(' ')[0] || 'daar';
+
         // Format volgens n8n Chat Trigger verwachtingen
         const payload = {
             action: 'sendMessage',
             sessionId: sessionId,
-            chatInput: message
+            chatInput: message,
+            metadata: {
+                userFirstName: firstName,
+                userName: user?.name || '',
+                userEmail: user?.email || ''
+            }
         };
 
         const response = await fetch(webhookUrl, {
