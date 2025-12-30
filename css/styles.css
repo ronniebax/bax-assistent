@@ -641,12 +641,6 @@ body:not(.initialized) #app-view {
     border-color: var(--primary);
 }
 
-.message-input:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    background-color: var(--background);
-}
-
 .message-input::placeholder {
     color: var(--text-gray);
 }

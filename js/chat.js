@@ -115,8 +115,7 @@ function updateInputState() {
 
     if (!messageInput || !sendButton) return;
 
-    // Disable input and button when assistant is responding
-    messageInput.disabled = isAssistantResponding;
+    // Only disable send button when assistant is responding (keep input enabled for better UX)
     sendButton.disabled = isAssistantResponding || !messageInput.value.trim();
 }
 
