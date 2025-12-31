@@ -55,6 +55,7 @@ export function initChat() {
     const messagesArea = document.getElementById('messages-area');
 
     setInitialInputPosition(messagesArea);
+    messageInput.focus();
 
     // Generate new session ID for each page load (fresh chat session)
     sessionId = generateSessionId();
