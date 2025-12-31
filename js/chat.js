@@ -2,6 +2,7 @@
 import { CONFIG } from '/webhook/bax-assistent/js/config.js';
 import { getCurrentUser } from '/webhook/bax-assistent/js/ui.js';
 import { sendFeedback } from '/webhook/bax-assistent/js/api.js';
+import { loadDebugActivity } from '/webhook/bax-assistent/js/debug.js';
 
 let messageHistory = [];
 let sessionId = null;
@@ -479,6 +480,11 @@ async function sendToN8nChat(message) {
         // Re-enable input after successful completion
         isAssistantResponding = false;
         updateInputState();
+
+        // Load debug activity data for this conversation
+        if (sessionId) {
+            loadDebugActivity(sessionId);
+        }
 
     } catch (error) {
         console.error('Chat error:', error);

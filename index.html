@@ -89,6 +89,12 @@
                         <div id="user-email" class="user-email"></div>
                     </div>
                     <img id="user-avatar" class="user-avatar" src="" alt="User">
+                    <button id="debug-toggle-btn" class="debug-toggle-btn" title="Toon agent activiteit">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 18 22 12 16 6"></polyline>
+                            <polyline points="8 6 2 12 8 18"></polyline>
+                        </svg>
+                    </button>
                     <button onclick="window.auth.logout()" class="logout-btn">Uitloggen</button>
                 </div>
             </div>
@@ -131,6 +137,35 @@
         </main>
     </div>
 
+    <!-- Debug Panel -->
+    <div id="debug-panel" class="debug-panel">
+        <div class="debug-panel-header">
+            <h3 class="debug-panel-title">Agent Activiteit</h3>
+            <button id="close-debug-panel" class="debug-panel-close" aria-label="Sluiten">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="debug-panel-content">
+            <div id="debug-panel-empty" class="debug-panel-empty">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+                <p>Geen activiteit om weer te geven</p>
+                <p class="debug-panel-empty-hint">Stel een vraag aan de agent om zijn activiteit te zien</p>
+            </div>
+            <div id="debug-panel-loading" class="debug-panel-loading hidden">
+                <div class="loading-spinner"></div>
+                <p>Agent activiteit ophalen...</p>
+            </div>
+            <div id="debug-panel-data" class="debug-panel-data hidden">
+                <!-- Activity data will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
     <!-- Feedback Modal -->
     <div id="feedback-modal" class="feedback-modal">
         <div class="feedback-modal-content">
@@ -162,25 +197,27 @@
         import { CONFIG } from '/webhook/bax-assistent/js/config.js';
         import { initAuth, startGoogleLogin, logout, setupOAuthCallback } from '/webhook/bax-assistent/js/auth.js';
         import { initChat } from '/webhook/bax-assistent/js/chat.js';
-        
+        import { initDebugPanel } from '/webhook/bax-assistent/js/debug.js';
+
         // Setup OAuth callback handler
         setupOAuthCallback();
-        
+
         // Make globally available for onclick handlers
         window.auth = {
             startGoogleLogin,
             logout
         };
-        
+
         window.CONFIG = CONFIG;
-        
+
         // Initialize app
         document.addEventListener('DOMContentLoaded', async () => {
             const authenticated = await initAuth();
-            
+
             // Initialize n8n embedded chat if authenticated
             if (authenticated) {
                 initChat();
+                initDebugPanel();
             }
         });
     </script>
