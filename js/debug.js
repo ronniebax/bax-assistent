@@ -140,36 +140,58 @@ function createActivityElement(activity) {
         `;
     }
 
-    // Add results if available
-    if (activity.tool_result) {
-        // Handle single object result (e.g., Websearch)
-        if (!Array.isArray(activity.tool_result) && typeof activity.tool_result === 'object') {
+    // Add results if available - support both tool_result and tool_results
+    const results = activity.tool_results || activity.tool_result;
+
+    if (results) {
+        // Check if results is an array of Websearch data
+        const isWebsearchArray = Array.isArray(results) && results.length > 0 && results[0].searchInformation;
+
+        // Handle Websearch array results
+        if (isWebsearchArray) {
+            html += `
+                <div class="debug-activity-results debug-websearch-results">
+                    <div class="debug-activity-label">Zoekresultaten</div>
+                    <div class="debug-activity-result-item">
+                        <div class="debug-activity-result-content">
+                            ${formatObjectResult(results)}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        // Handle single object result (non-Websearch)
+        else if (!Array.isArray(results) && typeof results === 'object') {
             html += `
                 <div class="debug-activity-results">
                     <div class="debug-activity-label">Tool Result</div>
                     <div class="debug-activity-result-item">
-                        <div class="debug-activity-result-header">
-                            <span class="debug-activity-result-title">${escapeHtml(activity.tool_used || 'Result')}</span>
-                        </div>
                         <div class="debug-activity-result-content">
-                            ${formatObjectResult(activity.tool_result)}
+                            ${formatObjectResult(results)}
                         </div>
                     </div>
                 </div>
             `;
         }
         // Handle array of results (e.g., Product Descriptions)
-        else if (Array.isArray(activity.tool_result) && activity.tool_result.length > 0) {
+        else if (Array.isArray(results) && results.length > 0) {
+            const resultId = `results-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+
             html += `
-                <div class="debug-activity-results">
-                    <div class="debug-activity-label">${activity.tool_result.length} Resultaten</div>
+                <div class="debug-activity-results debug-product-results">
+                    <div class="debug-activity-label">${results.length} Resultaten</div>
             `;
 
             // Show first 3 results
-            const resultsToShow = activity.tool_result.slice(0, 3);
+            const resultsToShow = results.slice(0, 3);
             resultsToShow.forEach(result => {
                 const score = result.score ? (result.score * 100).toFixed(0) : '0';
-                const content = result.product_s_desc || result.content || result.description || 'Geen content beschikbaar';
+
+                // Get content and filter out meaningless placeholders like "."
+                let content = result.product_s_desc || result.content || result.description || '';
+                if (!content || content.trim() === '.' || content.trim().length <= 1) {
+                    content = 'Geen omschrijving beschikbaar';
+                }
 
                 html += `
                     <div class="debug-activity-result-item">
@@ -182,8 +204,41 @@ function createActivityElement(activity) {
                 `;
             });
 
-            if (activity.tool_result.length > 3) {
-                html += `<p class="debug-activity-text" style="margin-top: 0.5rem; font-size: 0.8125rem; opacity: 0.7;">+${activity.tool_result.length - 3} meer...</p>`;
+            // Add collapsible section for remaining results if there are more than 3
+            if (results.length > 3) {
+                const remainingResults = results.slice(3);
+
+                html += `
+                    <button class="debug-show-more-btn" onclick="toggleResults('${resultId}', event)">
+                        <span class="show-more-text">Toon ${remainingResults.length} meer resultaten</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div id="${resultId}" class="debug-additional-results hidden">
+                `;
+
+                remainingResults.forEach(result => {
+                    const score = result.score ? (result.score * 100).toFixed(0) : '0';
+
+                    // Get content and filter out meaningless placeholders like "."
+                    let content = result.product_s_desc || result.content || result.description || '';
+                    if (!content || content.trim() === '.' || content.trim().length <= 1) {
+                        content = 'Geen omschrijving beschikbaar';
+                    }
+
+                    html += `
+                        <div class="debug-activity-result-item">
+                            <div class="debug-activity-result-header">
+                                <span class="debug-activity-result-title">${escapeHtml(result.product_name || result.title || 'Result')}</span>
+                                <span class="debug-activity-result-score">${score}%</span>
+                            </div>
+                            <div class="debug-activity-result-content">${escapeHtml(content)}</div>
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
             }
 
             html += `</div>`;
@@ -202,7 +257,7 @@ function formatTimestamp(timestamp) {
     const diffMs = now - date;
     const diffMins = Math.floor(diffMs / 60000);
 
-    if (diffMins < 1) return 'Net nu';
+    if (diffMins < 1) return 'Nu';
     if (diffMins < 60) return `${diffMins} min geleden`;
 
     const diffHours = Math.floor(diffMins / 60);
@@ -227,11 +282,49 @@ function escapeHtml(text) {
 function formatObjectResult(obj) {
     if (!obj) return 'Geen data beschikbaar';
 
-    // For Websearch results, show key information
+    // Handle array of Websearch results (wrapped in array)
+    if (Array.isArray(obj) && obj.length > 0) {
+        // Take the first item from the array which contains the actual search data
+        obj = obj[0];
+    }
+
+    // For Websearch results, show search summary and top results
     if (obj.searchInformation) {
         const totalResults = obj.searchInformation.formattedTotalResults || '0';
         const searchTime = obj.searchInformation.formattedSearchTime || '0';
-        return escapeHtml(`Zoekresultaten: ${totalResults} gevonden in ${searchTime}s`);
+
+        let output = `<div style="margin-bottom: 0.5rem;"><strong>${totalResults} resultaten</strong> in ${searchTime}s</div>`;
+
+        // Show first 2 search results if available
+        if (obj.items && Array.isArray(obj.items) && obj.items.length > 0) {
+            output += '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+
+            obj.items.slice(0, 2).forEach((item) => {
+                const title = item.title || 'Geen titel';
+                const snippet = item.snippet || 'Geen beschrijving';
+
+                output += `
+                    <div style="padding: 0.5rem; background: var(--bg-light); border-radius: 0.25rem; font-size: 0.8125rem;">
+                        <div style="font-weight: 600; color: var(--primary); margin-bottom: 0.25rem;">
+                            ${escapeHtml(title)}
+                        </div>
+                        <div style="color: var(--text-gray); line-height: 1.4;">
+                            ${escapeHtml(snippet)}
+                        </div>
+                    </div>
+                `;
+            });
+
+            output += '</div>';
+
+            if (obj.items.length > 2) {
+                output += `<div style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-gray);">+${obj.items.length - 2} meer resultaten</div>`;
+            }
+        } else {
+            output += '<div style="color: var(--text-gray); font-style: italic;">Geen relevante resultaten gevonden</div>';
+        }
+
+        return output;
     }
 
     // For other objects, try to extract useful info
@@ -303,5 +396,29 @@ export async function loadDebugActivity(conversationId) {
 export function refreshDebugActivity() {
     if (currentConversationId) {
         loadDebugActivity(currentConversationId);
+    }
+}
+
+// Toggle show more/less results
+window.toggleResults = function(resultId, event) {
+    const resultsContainer = document.getElementById(resultId);
+    const button = event.target.closest('.debug-show-more-btn');
+
+    if (!resultsContainer || !button) return;
+
+    const isHidden = resultsContainer.classList.contains('hidden');
+    const textSpan = button.querySelector('.show-more-text');
+    const svg = button.querySelector('svg');
+
+    if (isHidden) {
+        resultsContainer.classList.remove('hidden');
+        textSpan.textContent = 'Toon minder resultaten';
+        svg.style.transform = 'rotate(180deg)';
+    } else {
+        resultsContainer.classList.add('hidden');
+        const totalResults = resultsContainer.parentElement.querySelectorAll('.debug-activity-result-item').length;
+        const shownResults = 3; // Always show first 3
+        textSpan.textContent = `Toon ${totalResults - shownResults} meer resultaten`;
+        svg.style.transform = 'rotate(0deg)';
     }
 }
