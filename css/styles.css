@@ -605,7 +605,7 @@ body:not(.initialized) #app-view {
     bottom: 0;
     flex-shrink: 0;
     padding: 1rem 0;
-    background: linear-gradient(to top, var(--white) 85%, transparent);
+    background: transparent;
     border-top: none;
     box-shadow: none;
     transition: margin 0.35s ease, padding 0.35s ease, background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
@@ -753,7 +753,7 @@ body:not(.initialized) #app-view {
 
 .chat-container[data-input-position="docked"] .input-area {
     box-shadow: none;
-    background: linear-gradient(to top, var(--white) 85%, transparent);
+    background: transparent;
     border-top: none;
 }
 
